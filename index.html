@@ -3,84 +3,341 @@
 
 <head>
 	<!-- Primary Meta Tags -->
-	<title>LinkPe | UPI LINK Generator</title>
-	<meta name="title" content="LinkPe | UPI LINK Generator">
-	<meta name="description" content="LinkPe | UPI LINK Generator - https://github.com/PtPrashantTripathi/linkpe">
-	<link rel="fluid-icon" href="https://raw.githubusercontent.com/PtPrashantTripathi/linkpe/main/img/linkpe.png"
-		title="PtPrashantTripathi | LinkPe" />
-	<!-- Open Graph / Facebook -->
-	<meta property="og:type" content="website">
-	<meta property="og:url" content="https://ptprashanttripathi.github.io/linkpe">
-	<meta property="og:title" content="LinkPe | UPI LINK Generator">
-	<meta property="og:description"
-		content="LinkPe | UPI LINK Generator - https://github.com/PtPrashantTripathi/linkpe">
-	<meta property="og:image" content="https://raw.githubusercontent.com/PtPrashantTripathi/linkpe/main/img/linkpe.png">
-	<!-- Twitter -->
-	<meta property="twitter:card" content="summary_large_image">
-	<meta property="twitter:url" content="https://ptprashanttripathi.github.io/linkpe">
-	<meta property="twitter:title" content="LinkPe | UPI LINK Generator">
-	<meta property="twitter:description"
-		content="LinkPe | UPI LINK Generator - https://github.com/PtPrashantTripathi/linkpe">
-	<meta property="twitter:image"
-		content="https://raw.githubusercontent.com/PtPrashantTripathi/linkpe/main/img/linkpe.png">
+	<title>LinkPe | UPI Payment</title>
+	<meta name="title" content="LinkPe | UPI Payment">
+	<meta name="description" content="LinkPe | UPI Payment Gateway">
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="css/main.css">
-	<!--Coded by Pt. Prashant Tripathi @ptprashanttripathi on 14th Oct 2020 -->
+	<style>
+		.pay-buttons {
+			margin-top: 15px;
+		}
+		.pay-buttons a {
+			display: inline-block;
+			margin: 5px;
+			text-decoration: none;
+		}
+		.pay-buttons img {
+			height: 50px;
+			border-radius: 8px;
+		}
+		.amount-display {
+			font-size: 1.5em;
+			color: #2ecc71;
+			font-weight: bold;
+			margin: 10px 0;
+		}
+		.payee-info {
+			color: #555;
+			margin: 5px 0;
+		}
+		.intent-section {
+			margin-top: 20px;
+			padding: 15px;
+			background: #f8f9fa;
+			border-radius: 10px;
+		}
+		.btn-pay {
+			display: inline-block;
+			background: #5f27cd;
+			color: #fff;
+			padding: 12px 30px;
+			border-radius: 25px;
+			text-decoration: none;
+			font-size: 1.1em;
+			margin: 10px 5px;
+			transition: background 0.3s;
+		}
+		.btn-pay:hover {
+			background: #341f97;
+		}
+		.btn-gpay {
+			background: #4285F4;
+		}
+		.btn-gpay:hover {
+			background: #3367D6;
+		}
+		.btn-phonepe {
+			background: #5f259f;
+		}
+		.btn-phonepe:hover {
+			background: #4a1d7a;
+		}
+		.btn-paytm {
+			background: #00BAF2;
+		}
+		.btn-paytm:hover {
+			background: #0095c4;
+		}
+		.btn-generic {
+			background: #2ecc71;
+		}
+		.btn-generic:hover {
+			background: #27ae60;
+		}
+		.status-msg {
+			margin-top: 10px;
+			padding: 8px;
+			border-radius: 5px;
+			display: none;
+		}
+		.status-msg.error {
+			background: #ffe0e0;
+			color: #c0392b;
+			display: block;
+		}
+		.status-msg.info {
+			background: #e0f0ff;
+			color: #2980b9;
+			display: block;
+		}
+	</style>
+</head>
 
 <body>
 	<center>
 		<div class="card">
 			<div class="card-content">
 				<a href="linkpe.html?new"><img src="img/logo.png" height="50"></a>
-				<h5 id="name" style="color: #101010;">
-					</h4>
-					<canvas id="qr"></canvas>
-					<div style="margin-top: 2px;">
-						<a id="linkpe">
-							<img src="img/upi.png" height="80">
-							<br>
-							<button class='btn'>Click here to Pay Now</button>
-						</a>
-					</div>
-					<br>
-					<a href="linkpe.html?new" style="color: #777;">Click here to create your own payment link</a>
-					<br>
-					<p style="color: #555">
-						<b>Developed BY : </b>
-						<a href="https://ptprashanttripathi.github.io" style="color: #999;">Pt. Prashant
-							Tripathi</a><img src="https://visitor-badge.vercel.app/page/linkpe?color=Blue" />
+				<h5 id="name" style="color: #101010;"></h5>
+				
+				<div id="payment-details" style="display:none;">
+					<p class="payee-info">Paying to: <strong id="payee-name"></strong></p>
+					<p class="payee-info" id="payee-vpa-display" style="font-size:0.85em; color:#888;"></p>
+					<div class="amount-display" id="amount-display"></div>
+				</div>
 
-					</p>
+				<canvas id="qr"></canvas>
+				
+				<div id="intent-buttons" class="intent-section" style="display:none;">
+					<p style="color:#555; margin-bottom:10px; font-size:0.9em;">Tap to pay with your UPI app:</p>
+					<a id="link-generic" class="btn-pay btn-generic" href="#">Pay with Any UPI App</a>
+					<br>
+					<a id="link-gpay" class="btn-pay btn-gpay" href="#">Google Pay</a>
+					<a id="link-phonepe" class="btn-pay btn-phonepe" href="#">PhonePe</a>
+					<a id="link-paytm" class="btn-pay btn-paytm" href="#">Paytm</a>
+				</div>
+
+				<div id="status-msg" class="status-msg"></div>
+
+				<br>
+				<a href="linkpe.html?new" style="color: #777; font-size:0.85em;">Create your own payment link</a>
+				<br>
+				<p style="color: #555; font-size: 0.8em; margin-top:15px;">
+					<b>Powered by </b>
+					<a href="https://ptprashanttripathi.github.io" style="color: #999;">LinkPe</a>
+				</p>
 			</div>
 		</div>
 	</center>
 	<script src="qrious/qrious.min.js"></script>
 	<script>
-		if (window.location.search.indexOf('pa') > -1) {
-			const queryString = window.location.search;
-			const urlParams = new URLSearchParams(queryString);
-			const pn = urlParams.get('pn');
-			const pa = urlParams.get('pa');
-			var user;
-			if (pn !== "") user = pn;
-			else user = pa;
-			const url = 'upi://pay' + queryString;
-			document.getElementById("name").innerHTML = "Click on PayNow or Scan Qr and Pay using any UPI Apps To Pay <br>" + user;
-			document.getElementById("linkpe").href = url;
-			(function () {
-				var qr = new QRious({
-					element: document.getElementById('qr'),
-					background: '#fff',
-					foreground: '#000',
-					size: 200,
-					level: 'H',
-					value: url
-				});
-			})();
-		} else {
-			location.replace("linkpe.html?error");
-		}
+		(function() {
+			'use strict';
+
+			// Generate a unique transaction reference ID
+			function generateTransactionRef() {
+				var timestamp = Date.now().toString(36);
+				var randomPart = Math.random().toString(36).substring(2, 10);
+				return 'TXN' + timestamp + randomPart;
+			}
+
+			// Generate a unique transaction ID
+			function generateTransactionId() {
+				return Date.now().toString() + Math.floor(Math.random() * 10000).toString();
+			}
+
+			// Build a proper UPI intent URL with all required parameters
+			function buildUpiUrl(params) {
+				var pa = params.pa; // Payee VPA (required)
+				var pn = params.pn || ''; // Payee name
+				var am = params.am || ''; // Amount
+				var cu = params.cu || 'INR'; // Currency (default INR)
+				var tn = params.tn || ''; // Transaction note
+				var tr = params.tr || generateTransactionRef(); // Transaction reference (MUST be unique)
+				var tid = params.tid || generateTransactionId(); // Transaction ID
+				var mc = params.mc || ''; // Merchant code (optional)
+				var mode = params.mode || '00'; // mode: 00=P2P default, 04=merchant QR
+
+				if (!pa) return null;
+
+				// Build URL with proper encoding
+				var url = 'upi://pay?';
+				var queryParts = [];
+
+				// Required parameters
+				queryParts.push('pa=' + encodeURIComponent(pa));
+				queryParts.push('pn=' + encodeURIComponent(pn || pa.split('@')[0]));
+				queryParts.push('cu=' + encodeURIComponent(cu));
+
+				// Transaction reference - CRITICAL for avoiding risk policy flags
+				queryParts.push('tr=' + encodeURIComponent(tr));
+
+				// Transaction note - helps legitimize the payment
+				if (tn) {
+					queryParts.push('tn=' + encodeURIComponent(tn));
+				} else {
+					// Generate a sensible default note
+					var defaultNote = 'Payment to ' + (pn || pa.split('@')[0]);
+					queryParts.push('tn=' + encodeURIComponent(defaultNote));
+				}
+
+				// Amount (if specified)
+				if (am && !isNaN(parseFloat(am)) && parseFloat(am) > 0) {
+					// Ensure amount is properly formatted (2 decimal places)
+					queryParts.push('am=' + parseFloat(am).toFixed(2));
+				}
+
+				// Merchant code (if available)
+				if (mc) {
+					queryParts.push('mc=' + encodeURIComponent(mc));
+				}
+
+				// Mode - important for risk engine
+				queryParts.push('mode=' + encodeURIComponent(mode));
+
+				// Add orgid for NPCI
+				queryParts.push('orgid=000000');
+
+				return url + queryParts.join('&');
+			}
+
+			// Build app-specific intent URLs
+			function buildAppSpecificUrl(baseUrl, app) {
+				// For Android, different apps use the same upi:// scheme
+				// The OS handles the app selection via intent
+				// But we can create specific intents for known apps
+				switch(app) {
+					case 'gpay':
+						// Google Pay uses the standard upi:// scheme
+						return baseUrl;
+					case 'phonepe':
+						// PhonePe also uses standard upi:// but can use phonepe:// scheme
+						return baseUrl.replace('upi://pay?', 'phonepe://pay?');
+					case 'paytm':
+						// Paytm uses paytmmp:// scheme
+						return baseUrl.replace('upi://pay?', 'paytmmp://pay?');
+					default:
+						return baseUrl;
+				}
+			}
+
+			// Show error/info message
+			function showMessage(msg, type) {
+				var el = document.getElementById('status-msg');
+				el.textContent = msg;
+				el.className = 'status-msg ' + (type || 'info');
+			}
+
+			// Main initialization
+			if (window.location.search.indexOf('pa') > -1) {
+				var urlParams = new URLSearchParams(window.location.search);
+				var pa = urlParams.get('pa');
+				var pn = urlParams.get('pn') || '';
+				var am = urlParams.get('am') || '';
+				var cu = urlParams.get('cu') || 'INR';
+				var tn = urlParams.get('tn') || '';
+				var mc = urlParams.get('mc') || '';
+				var tr = urlParams.get('tr') || ''; // Allow pre-set tr from link, but generate fresh if empty
+				var mode = urlParams.get('mode') || '00';
+
+				if (!pa) {
+					showMessage('Invalid payment link: No payee address found.', 'error');
+					return;
+				}
+
+				// Display payment info
+				var displayName = pn || pa.split('@')[0];
+				document.getElementById('name').innerHTML = 'Payment Request';
+				document.getElementById('payee-name').textContent = displayName;
+				document.getElementById('payee-vpa-display').textContent = pa;
+				document.getElementById('payment-details').style.display = 'block';
+
+				if (am && parseFloat(am) > 0) {
+					document.getElementById('amount-display').textContent = '₹ ' + parseFloat(am).toFixed(2);
+				} else {
+					document.getElementById('amount-display').textContent = 'Amount: Enter in app';
+				}
+
+				// Build the UPI URL with a FRESH unique transaction reference each time
+				var upiParams = {
+					pa: pa,
+					pn: pn,
+					am: am,
+					cu: cu,
+					tn: tn,
+					tr: tr || generateTransactionRef(), // Always ensure unique tr
+					mc: mc,
+					mode: mode
+				};
+
+				var upiUrl = buildUpiUrl(upiParams);
+
+				if (!upiUrl) {
+					showMessage('Could not generate payment link. Please check the payee address.', 'error');
+					return;
+				}
+
+				// Set up QR code with the UPI URL
+				try {
+					var qr = new QRious({
+						element: document.getElementById('qr'),
+						background: '#fff',
+						foreground: '#000',
+						size: 200,
+						level: 'H',
+						value: upiUrl
+					});
+				} catch(e) {
+					console.log('QR generation failed:', e);
+				}
+
+				// Set up intent buttons
+				document.getElementById('intent-buttons').style.display = 'block';
+
+				// Generic UPI button (works with all apps)
+				document.getElementById('link-generic').href = upiUrl;
+
+				// App-specific buttons
+				document.getElementById('link-gpay').href = buildAppSpecificUrl(upiUrl, 'gpay');
+				document.getElementById('link-phonepe').href = buildAppSpecificUrl(upiUrl, 'phonepe');
+				document.getElementById('link-paytm').href = buildAppSpecificUrl(upiUrl, 'paytm');
+
+				// Add click handlers to regenerate tr on each click (prevents duplicate tr issues)
+				var intentLinks = document.querySelectorAll('.btn-pay');
+				for (var i = 0; i < intentLinks.length; i++) {
+					intentLinks[i].addEventListener('click', function(e) {
+						// Generate fresh transaction reference on each click attempt
+						var freshParams = {
+							pa: pa,
+							pn: pn,
+							am: am,
+							cu: cu,
+							tn: tn,
+							tr: generateTransactionRef(), // Fresh tr each time
+							mc: mc,
+							mode: mode
+						};
+						var freshUrl = buildUpiUrl(freshParams);
+						var appType = this.id.replace('link-', '');
+						
+						if (appType === 'generic') {
+							this.href = freshUrl;
+						} else {
+							this.href = buildAppSpecificUrl(freshUrl, appType);
+						}
+						// Let the default link action proceed with the updated href
+					});
+				}
+
+				console.log('UPI Intent URL generated:', upiUrl);
+
+			} else {
+				// No payment params - redirect to link generator
+				location.replace("linkpe.html?error");
+			}
+		})();
 	</script>
 </body>
 

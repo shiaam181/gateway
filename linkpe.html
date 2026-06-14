@@ -45,12 +45,14 @@
 				</div>
 				<form id="linkpeform">
 					<label style="color: #DAE1E2;">Enter Name:</label><br>
-					<input type="name" name="pn" class="text-box" placeholder="Enter your name (Optional):"><br>
-					<label style="color: #DAE1E2;">Enter Upi Id:</label><br>
-					<input type="email" name="pa" class="text-box" placeholder="Enter UPI Id" required><br>
+					<input type="text" name="pn" class="text-box" placeholder="Enter your name (Optional):"><br>
+					<label style="color: #DAE1E2;">Enter UPI ID:</label><br>
+					<input type="text" name="pa" class="text-box" placeholder="Enter UPI Id (e.g. name@upi)" required><br>
 					<label style="color: #DAE1E2;">Enter Amount (Optional):</label><br>
-					<input type="number" name="am" class="text-box" placeholder="INR"><br>
-					<button type="submit" class="btn">Submit</button>
+					<input type="number" name="am" class="text-box" placeholder="INR" step="0.01" min="1"><br>
+					<label style="color: #DAE1E2;">Payment Note (Optional):</label><br>
+					<input type="text" name="tn" class="text-box" placeholder="e.g. Payment for order #123"><br>
+					<button type="submit" class="btn">Generate Payment Link</button>
 				</form>
 				<br>
 				<p style="color: #555">
@@ -68,6 +70,9 @@
 	const pn = urlParams.get('pn');
 	const pa = urlParams.get('pa');
 	const am = urlParams.get('am');
+	const tn = urlParams.get('tn') || '';
+	const mc = urlParams.get('mc') || '';
+	
 	if (pa !== null) {
 		// check prod or dev
 		var linkpeURL = window.location.hostname;
@@ -75,13 +80,28 @@
 			console.log("dev");
 			linkpeURL = `${window.location.protocol}//${window.location.hostname}:${window.location.port}/index.html`;
 		} else {
-			linkpeURL = `${window.location.protocol}//${window.location.hostname}/linkpe`;
+			linkpeURL = `${window.location.protocol}//${window.location.hostname}/index.html`;
 		}
 
-		linkpeURL += `?pa=${pa}&pn=${pn}&cu=INR`;
+		// Build URL with proper parameters
+		linkpeURL += `?pa=${encodeURIComponent(pa)}&pn=${encodeURIComponent(pn || '')}&cu=INR`;
+		
 		if (!isNaN(am) && am !== null && am !== "") {
-			linkpeURL += `&am=${am}`;
+			linkpeURL += `&am=${encodeURIComponent(am)}`;
 		}
+		
+		// Add transaction note if provided
+		if (tn) {
+			linkpeURL += `&tn=${encodeURIComponent(tn)}`;
+		}
+		
+		// Add merchant code if provided
+		if (mc) {
+			linkpeURL += `&mc=${encodeURIComponent(mc)}`;
+		}
+
+		// Mode: 00 for P2P (personal VPA), 04 for merchant
+		linkpeURL += `&mode=00`;
 
 		document.getElementById("linkpeURL").innerHTML = linkpeURL;
 		document.getElementById("whatsapp").href = "https://wa.me/?text=Hi%2C%20You%20can%20pay%20me%20by%20this%20Upi%20Payment%20Link%0A%20" + encodeURIComponent(linkpeURL);
